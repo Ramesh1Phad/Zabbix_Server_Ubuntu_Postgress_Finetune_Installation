@@ -1,0 +1,5 @@
+Always make sure to consider below requirements before installation and overview of end to end process.
+Server Compo - CPU, RAM, OS, Disk
+Update OS, Install Postgress DB, Install Timescale DB, Time Scale DB Tuning Tool, Restart DB, Create Zabbix DB
+Install Zabbix Server + Frontend, Import Schema, Configure DB, Enable Services
+Postgress Performance Tuning, Enable DB Extension, Partition tables
