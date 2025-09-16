@@ -1,0 +1,40 @@
+# -----------------------------
+# PostgreSQL Performance Tuning
+# For Zabbix + TimescaleDB
+# Host: 8 vCPU, 32 GB RAM, NVMe
+# -----------------------------
+
+# Memory Settings
+shared_buffers = 8GB              # ~25% of RAM
+work_mem = 64MB                   # per operation
+maintenance_work_mem = 1GB        # for VACUUM/CREATE INDEX
+effective_cache_size = 24GB       # ~75% RAM, helps planner
+
+# WAL (Write Ahead Log) & Checkpoint
+wal_level = replica
+max_wal_size = 4GB
+min_wal_size = 1GB
+checkpoint_completion_target = 0.9
+synchronous_commit = off          # safe for Zabbix, faster inserts
+wal_compression = on
+
+# Autovacuum
+autovacuum = on
+autovacuum_naptime = 10s
+autovacuum_max_workers = 5
+autovacuum_vacuum_scale_factor = 0.1
+autovacuum_analyze_scale_factor = 0.05
+
+# Parallelism
+max_worker_processes = 16
+max_parallel_workers = 8
+max_parallel_workers_per_gather = 4
+parallel_setup_cost = 1000
+parallel_tuple_cost = 0.1
+
+# Connections
+max_connections = 200             # adjust if you have many Zabbix users
+
+# TimescaleDB Recommended
+timescaledb.telemetry_level = off
+timescaledb.max_background_workers = 16
