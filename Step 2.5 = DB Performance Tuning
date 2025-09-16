@@ -1,0 +1,40 @@
+
+# Backup current postgresql conf before proceeding with next changes
+
+# Edit postgresql.conf   Usually in /etc/postgresql/15/main/postgresql.conf
+
+# Memory tuning
+shared_buffers = 8GB        # ~25% of system RAM
+work_mem = 64MB             # per query
+maintenance_work_mem = 1GB
+effective_cache_size = 24GB # ~75% of RAM
+
+# Checkpoints
+checkpoint_timeout = 15min
+max_wal_size = 4GB
+min_wal_size = 1GB
+
+# Parallelism
+max_parallel_workers = 8
+max_worker_processes = 8
+max_parallel_maintenance_workers = 4
+
+# Apply Changes
+sudo systemctl restart postgresql
+
+# Enable TimescaleDB extension
+sudo -u postgres psql -d zabbix -c "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;"
+
+# Partition history tables (Zabbix 7 auto supports TimescaleDB, but ensure compression):
+sudo -u postgres psql -d zabbix
+SELECT create_hypertable('history', 'clock');
+SELECT create_hypertable('history_uint', 'clock');
+SELECT create_hypertable('history_str', 'clock');
+SELECT create_hypertable('history_text', 'clock');
+SELECT create_hypertable('history_log', 'clock');
+
+-- Enable compression after 90 days
+ALTER TABLE history SET (timescaledb.compress);
+SELECT add_compression_policy('history', INTERVAL '90 days');
+\q
+
