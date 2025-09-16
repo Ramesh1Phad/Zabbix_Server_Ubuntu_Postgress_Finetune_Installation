@@ -1,0 +1,43 @@
+# Apache (MPM + PHP-FPM)  /etc/apache2/mods-enabled/mpm_event.conf
+<IfModule mpm_event_module>
+   StartServers              4
+   MinSpareThreads          25
+   MaxSpareThreads          75
+   ThreadLimit              64
+   ThreadsPerChild          25
+   MaxRequestWorkers       400
+   MaxConnectionsPerChild  5000
+</IfModule>
+
+# Keep Alive
+KeepAlive On
+MaxKeepAliveRequests 100
+KeepAliveTimeout 2
+
+# PHP-FPM (Zabbix Frontend)  /etc/php/8.1/fpm/pool.d/www.conf
+pm = dynamic
+pm.max_children = 50
+pm.start_servers = 10
+pm.min_spare_servers = 5
+pm.max_spare_servers = 20
+pm.max_requests = 500
+
+; Request & memory limits
+request_terminate_timeout = 120
+php_value[session.gc_maxlifetime] = 7200
+
+# PHP runtime tunning (php.ini)
+max_execution_time = 300
+memory_limit = 256M
+post_max_size = 32M
+upload_max_filesize = 16M
+max_input_time = 300
+date.timezone = Asia/Kolkata   ; adjust for your TZ
+
+# PHP Opcode Cache (Must-Have)  /etc/php/8.1/mods-available/opcache.ini
+opcache.enable=1
+opcache.memory_consumption=256
+opcache.interned_strings_buffer=16
+opcache.max_accelerated_files=20000
+opcache.revalidate_freq=2
+opcache.fast_shutdown=1
