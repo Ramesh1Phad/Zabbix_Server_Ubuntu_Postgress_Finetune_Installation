@@ -21,6 +21,7 @@ sudo timescaledb-tune
 
 # Restart DB
 sudo systemctl restart postgresql
+sudo systemctl start postgresql
 
 # Create Zabbix Database
 sudo -u postgres psql
