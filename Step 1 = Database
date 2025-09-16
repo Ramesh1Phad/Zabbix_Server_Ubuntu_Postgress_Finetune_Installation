@@ -1,0 +1,29 @@
+# Update and install required packages
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y wget curl gnupg2 software-properties-common apt-transport-https ca-certificates lsb-release
+
+# Set Correct Timezone
+sudo timedatectl set-timezone UTC
+
+# Install PostreSQL 15
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+wget -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+sudo apt update
+sudo apt install -y postgresql-15 postgresql-contrib
+
+# Install TimescaleDB
+sudo add-apt-repository ppa:timescale/timescaledb-ppa -y
+sudo apt update
+sudo apt install -y timescaledb-2-postgresql-15
+
+# Run TimeScale DB Tuning Tool
+sudo timescaledb-tune
+
+# Restart DB
+sudo systemctl restart postgresql
+
+# Create Zabbix Database
+sudo -u postgres psql
+CREATE DATABASE zabbix;
+CREATE USER zabbix WITH PASSWORD 'StrongPassw0rd!';
+GRANT ALL PRIVILEGES ON DATABASE zabbix TO zabbix;
